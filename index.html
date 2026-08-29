@@ -2,1231 +2,1396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>VYBE — Short Videos</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #07070b;
-    --card: #111118;
-    --text: #ffffff;
-    --muted: #9b9ba8;
-    --accent: #8b5cf6;
-    --accent2: #ec4899;
-    --border: rgba(255,255,255,0.08);
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background:
-        radial-gradient(circle at top left, rgba(139,92,246,.15), transparent 35%),
-        radial-gradient(circle at top right, rgba(236,72,153,.10), transparent 30%),
-        var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-}
-
-/* HEADER */
-
-header {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(7,7,11,.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-}
-
-.logo {
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    background: linear-gradient(90deg, #8b5cf6, #ec4899);
-    -webkit-background-clip: text;
-    color: transparent;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search {
-    width: 250px;
-    padding: 11px 16px;
-    border-radius: 25px;
-    border: 1px solid var(--border);
-    outline: none;
-    background: rgba(255,255,255,.06);
-    color: white;
-}
-
-.search::placeholder {
-    color: #888894;
-}
-
-.upload-btn {
-    border: none;
-    cursor: pointer;
-    padding: 11px 18px;
-    border-radius: 25px;
-    color: white;
-    font-weight: bold;
-    background: linear-gradient(90deg, #8b5cf6, #ec4899);
-    transition: .2s;
-}
-
-.upload-btn:hover {
-    transform: translateY(-2px);
-}
-
-/* CATEGORIES */
-
-.categories {
-    display: flex;
-    gap: 10px;
-    padding: 18px 25px;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.categories::-webkit-scrollbar {
-    display: none;
-}
-
-.category {
-    flex: 0 0 auto;
-    padding: 9px 17px;
-    border-radius: 25px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid var(--border);
-    color: #bbb;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.category:hover,
-.category.active {
-    color: white;
-    border-color: transparent;
-    background: linear-gradient(90deg, #8b5cf6, #ec4899);
-}
-
-/* MAIN */
-
-main {
-    max-width: 1400px;
-    margin: auto;
-    padding: 10px 25px 50px;
-}
-
-.section-title {
-    font-size: 25px;
-    margin: 10px 0 20px;
-}
-
-/* VIDEO GRID */
-
-.video-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-.video-card {
-    position: relative;
-    height: 520px;
-    border-radius: 20px;
-    overflow: hidden;
-    background: #111;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    box-shadow: 0 15px 40px rgba(0,0,0,.25);
-}
-
-.video-card video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    background: #111;
-}
-
-.video-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        transparent 45%,
-        rgba(0,0,0,.85)
-    );
-    pointer-events: none;
-}
-
-.video-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 18px;
-    z-index: 2;
-}
-
-.creator {
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.description {
-    color: #ddd;
-    font-size: 14px;
-    line-height: 1.4;
-    margin-bottom: 12px;
-}
-
-.video-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.action-btn {
-    border: none;
-    color: white;
-    background: rgba(255,255,255,.12);
-    padding: 8px 11px;
-    border-radius: 20px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-}
-
-.action-btn:hover {
-    background: rgba(255,255,255,.25);
-}
-
-.delete-btn {
-    color: #ff7777;
-}
-
-.empty {
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--muted);
-}
-
-/* UPLOAD MODAL */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.75);
-    backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 20px;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal-box {
-    width: 100%;
-    max-width: 520px;
-    padding: 28px;
-    border-radius: 25px;
-    background: #12121a;
-    border: 1px solid var(--border);
-    box-shadow: 0 30px 80px rgba(0,0,0,.6);
-}
-
-.modal-box h2 {
-    margin-bottom: 20px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 7px;
-    color: #bbb;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: #09090e;
-    color: white;
-    outline: none;
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 90px;
-}
-
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.modal-actions button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.cancel {
-    background: #292933;
-    color: white;
-}
-
-.submit {
-    background: linear-gradient(90deg,#8b5cf6,#ec4899);
-    color: white;
-}
-
-.file-name {
-    color: #aaa;
-    font-size: 13px;
-    margin-top: 7px;
-}
-
-/* MOBILE */
-
-@media (max-width: 1100px) {
-    .video-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 800px) {
-
-    header {
-        padding: 0 15px;
-    }
-
-    .search {
-        width: 150px;
-    }
-
-    .video-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .video-card {
-        height: 470px;
-    }
-
-    main {
-        padding: 5px 12px 40px;
-    }
-
-    .categories {
-        padding: 15px 12px;
-    }
-}
-
-@media (max-width: 550px) {
-
-    header {
-        height: 60px;
-    }
-
-    .logo {
-        font-size: 22px;
-    }
-
-    .header-right {
-        gap: 6px;
-    }
-
-    .search {
-        width: 115px;
-        padding: 9px 12px;
-    }
-
-    .upload-btn {
-        padding: 9px 12px;
-    }
-
-    .video-grid {
-        display: block;
-    }
-
-    .video-card {
-        width: 100%;
-        height: calc(100vh - 150px);
-        max-height: 700px;
-        margin-bottom: 18px;
-        border-radius: 18px;
-    }
-
-    .section-title {
-        font-size: 21px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>StreamX | Watch Short Videos</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #080808;
+            --card: #121212;
+            --card-hover: #1b1b1b;
+            --text: #ffffff;
+            --muted: #999999;
+            --accent: #ff1744;
+            --accent2: #ff4d6d;
+            --border: #242424;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 70px;
+            background: rgba(8, 8, 8, 0.94);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar {
+            max-width: 1400px;
+            height: 100%;
+            margin: auto;
+            padding: 0 25px;
+
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 600px;
+            margin: auto;
+
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 42px;
+
+            background: #181818;
+            border: 1px solid #292929;
+            border-radius: 25px;
+
+            color: white;
+            padding: 0 50px 0 20px;
+            outline: none;
+
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            color: #aaa;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            max-width: 1400px;
+            margin: auto;
+            padding: 35px 25px 20px;
+        }
+
+        .hero-box {
+            min-height: 390px;
+
+            border-radius: 18px;
+            overflow: hidden;
+
+            position: relative;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0,0,0,0.92) 0%,
+                    rgba(0,0,0,0.75) 35%,
+                    rgba(0,0,0,0.15) 75%,
+                    rgba(0,0,0,0.5) 100%
+                ),
+                url("https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80")
+                center/cover;
+        }
+
+        .hero-content {
+            position: absolute;
+            left: 50px;
+            bottom: 50px;
+            max-width: 550px;
+        }
+
+        .featured {
+            color: var(--accent);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 {
+            font-size: clamp(35px, 5vw, 65px);
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: #d0d0d0;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .watch-btn {
+            border: none;
+            background: var(--accent);
+            color: white;
+
+            padding: 13px 25px;
+            border-radius: 8px;
+
+            font-weight: bold;
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .watch-btn:hover {
+            background: #e90035;
+            transform: translateY(-2px);
+        }
+
+        /* ================= CONTENT ================= */
+
+        main {
+            max-width: 1400px;
+            margin: auto;
+            padding: 15px 25px 50px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin: 25px 0 18px;
+        }
+
+        .section-title h2 {
+            font-size: 22px;
+        }
+
+        .view-all {
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* ================= CATEGORIES ================= */
+
+        .categories {
+            display: flex;
+            gap: 10px;
+
+            overflow-x: auto;
+            padding-bottom: 10px;
+
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category {
+            background: #181818;
+            border: 1px solid #282828;
+
+            color: #ddd;
+
+            padding: 9px 18px;
+            border-radius: 20px;
+
+            cursor: pointer;
+            white-space: nowrap;
+
+            transition: 0.2s;
+        }
+
+        .category:hover,
+        .category.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* ================= VIDEO GRID ================= */
+
+        .video-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill, minmax(240px, 1fr));
+
+            gap: 22px;
+        }
+
+        .video-card {
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            border: 1px solid transparent;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            border-color: #292929;
+        }
+
+        .thumbnail {
+            height: 145px;
+            position: relative;
+            overflow: hidden;
+            background: #222;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+            transition: 0.3s;
+        }
+
+        .video-card:hover .thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .duration {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+
+            background: rgba(0,0,0,0.8);
+            padding: 4px 7px;
+
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .play-overlay {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%) scale(0.8);
+
+            width: 50px;
+            height: 50px;
+
+            border-radius: 50%;
+
+            background: rgba(255,23,68,0.95);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+
+            transition: 0.25s;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .play-overlay::after {
+            content: "";
+            width: 0;
+            height: 0;
+
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid white;
+
+            margin-left: 3px;
+        }
+
+        .video-info {
+            padding: 13px;
+        }
+
+        .video-title {
+            font-size: 15px;
+            font-weight: bold;
+
+            line-height: 1.4;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .video-meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* ================= EMPTY STATE ================= */
+
+        .empty {
+            display: none;
+
+            text-align: center;
+            padding: 70px 20px;
+
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        /* ================= VIDEO MODAL ================= */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            z-index: 1000;
+
+            background: rgba(0,0,0,0.94);
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .player-container {
+            width: min(1100px, 100%);
+
+            background: #111;
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+        }
+
+        .player-header {
+            height: 55px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 18px;
+
+            border-bottom: 1px solid #242424;
+        }
+
+        .player-title {
+            font-weight: bold;
+        }
+
+        .close-btn {
+            width: 35px;
+            height: 35px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: #222;
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 20px;
+        }
+
+        .close-btn:hover {
+            background: var(--accent);
+        }
+
+        video {
+            width: 100%;
+            max-height: 70vh;
+
+            display: block;
+
+            background: black;
+        }
+
+        .player-info {
+            padding: 18px;
+        }
+
+        .player-info h3 {
+            margin-bottom: 8px;
+        }
+
+        .player-info p {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: #222;
+            border: none;
+
+            color: white;
+
+            padding: 9px 15px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #333;
+        }
+
+        .action-btn.liked {
+            background: var(--accent);
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            border-top: 1px solid #222;
+
+            padding: 30px 20px;
+
+            text-align: center;
+
+            color: #666;
+
+            font-size: 13px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                height: auto;
+            }
+
+            .navbar {
+                padding: 12px 15px;
+
+                display: grid;
+
+                grid-template-columns: auto 1fr auto;
+                gap: 12px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .search-box {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                width: 100%;
+            }
+
+            .hero {
+                padding: 15px;
+            }
+
+            .hero-box {
+                min-height: 430px;
+            }
+
+            .hero-content {
+                left: 25px;
+                right: 25px;
+                bottom: 30px;
+            }
+
+            main {
+                padding: 10px 15px 40px;
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .thumbnail {
+                height: 120px;
+            }
+
+            .video-info {
+                padding: 10px;
+            }
+
+            .video-title {
+                font-size: 13px;
+            }
+
+            .video-meta {
+                font-size: 10px;
+            }
+
+            .modal {
+                padding: 0;
+            }
+
+            .player-container {
+                border-radius: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .thumbnail {
+                height: 190px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
+<!-- ================= NAVIGATION ================= -->
+
 <header>
 
-    <div class="logo">VYBE</div>
+    <nav class="navbar">
 
-    <div class="header-right">
+        <div class="logo">
+            Stream<span>X</span>
+        </div>
 
-        <input
-            type="text"
-            id="searchInput"
-            class="search"
-            placeholder="Search videos..."
-        >
+        <div class="search-box">
 
-        <button class="upload-btn" onclick="openUpload()">
-            + Upload
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search videos..."
+            >
+
+            <span class="search-icon">🔍</span>
+
+        </div>
+
+        <button class="menu-btn" onclick="scrollToCategories()">
+            ☰
+        </button>
+
+    </nav>
+
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-box">
+
+        <div class="hero-content">
+
+            <div class="featured">
+                🔥 Featured Video
+            </div>
+
+            <h1 id="heroTitle">
+                Discover Something New
+            </h1>
+
+            <p id="heroDescription">
+                Watch the latest videos, trending content and
+                entertaining clips all in one place.
+            </p>
+
+            <button class="watch-btn" onclick="openFeaturedVideo()">
+                ▶ Watch Now
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<main>
+
+    <!-- CATEGORIES -->
+
+    <div class="section-title">
+
+        <h2>Categories</h2>
+
+    </div>
+
+    <div class="categories" id="categories">
+
+        <button class="category active" data-category="All">
+            All
+        </button>
+
+        <button class="category" data-category="Trending">
+            🔥 Trending
+        </button>
+
+        <button class="category" data-category="Entertainment">
+            🎭 Entertainment
+        </button>
+
+        <button class="category" data-category="Music">
+            🎵 Music
+        </button>
+
+        <button class="category" data-category="Sports">
+            ⚽ Sports
+        </button>
+
+        <button class="category" data-category="Gaming">
+            🎮 Gaming
+        </button>
+
+        <button class="category" data-category="Education">
+            🎓 Education
+        </button>
+
+        <button class="category" data-category="Lifestyle">
+            ✨ Lifestyle
         </button>
 
     </div>
 
-</header>
 
-<div class="categories" id="categories">
+    <!-- VIDEOS -->
 
-    <div class="category active" data-category="All">
-        All
+    <div class="section-title">
+
+        <h2 id="sectionHeading">
+            Latest Videos
+        </h2>
+
+        <span class="view-all" onclick="showAllVideos()">
+            View All
+        </span>
+
     </div>
 
-    <div class="category" data-category="Entertainment">
-        Entertainment
-    </div>
-
-    <div class="category" data-category="Sports">
-        Sports
-    </div>
-
-    <div class="category" data-category="Gaming">
-        Gaming
-    </div>
-
-    <div class="category" data-category="Music">
-        Music
-    </div>
-
-    <div class="category" data-category="Education">
-        Education
-    </div>
-
-    <div class="category" data-category="Technology">
-        Technology
-    </div>
-
-    <div class="category" data-category="Lifestyle">
-        Lifestyle
-    </div>
-
-    <div class="category" data-category="Business">
-        Business
-    </div>
-
-</div>
-
-<main>
-
-    <h1 class="section-title">Discover</h1>
 
     <div class="video-grid" id="videoGrid"></div>
+
+
+    <div class="empty" id="emptyState">
+
+        <div class="empty-icon">
+            🔍
+        </div>
+
+        <h3>No videos found</h3>
+
+        <p>
+            Try searching for something else.
+        </p>
+
+    </div>
 
 </main>
 
 
-<!-- UPLOAD MODAL -->
+<!-- ================= VIDEO PLAYER ================= -->
 
-<div class="modal" id="uploadModal">
+<div class="modal" id="videoModal">
 
-    <div class="modal-box">
+    <div class="player-container">
 
-        <h2>Upload a Video</h2>
+        <div class="player-header">
 
-        <form id="uploadForm">
-
-            <div class="form-group">
-
-                <label>Video</label>
-
-                <input
-                    type="file"
-                    id="videoFile"
-                    accept="video/*"
-                    required
-                >
-
-                <div class="file-name" id="fileName">
-                    Select a video from your device
-                </div>
-
+            <div class="player-title" id="playerTitle">
+                Video
             </div>
 
-            <div class="form-group">
+            <button class="close-btn" onclick="closePlayer()">
+                ×
+            </button>
 
-                <label>Title</label>
+        </div>
 
-                <input
-                    type="text"
-                    id="videoTitle"
-                    placeholder="Enter video title"
-                    required
-                >
 
-            </div>
+        <video
+            id="videoPlayer"
+            controls
+            playsinline
+        >
+            Your browser does not support video playback.
+        </video>
 
-            <div class="form-group">
 
-                <label>Description</label>
+        <div class="player-info">
 
-                <textarea
-                    id="videoDescription"
-                    placeholder="Tell people about your video..."
-                ></textarea>
+            <h3 id="modalTitle">
+                Video Title
+            </h3>
 
-            </div>
+            <p id="modalDescription">
+                Video description
+            </p>
 
-            <div class="form-group">
 
-                <label>Category</label>
-
-                <select id="videoCategory">
-
-                    <option>Entertainment</option>
-                    <option>Sports</option>
-                    <option>Gaming</option>
-                    <option>Music</option>
-                    <option>Education</option>
-                    <option>Technology</option>
-                    <option>Lifestyle</option>
-                    <option>Business</option>
-
-                </select>
-
-            </div>
-
-            <div class="modal-actions">
+            <div class="player-actions">
 
                 <button
-                    type="button"
-                    class="cancel"
-                    onclick="closeUpload()"
+                    class="action-btn"
+                    id="likeButton"
+                    onclick="likeVideo()"
                 >
-                    Cancel
+                    ♡ Like
                 </button>
 
                 <button
-                    type="submit"
-                    class="submit"
+                    class="action-btn"
+                    onclick="shareVideo()"
                 >
-                    Upload Video
+                    ↗ Share
                 </button>
 
             </div>
 
-        </form>
+        </div>
 
     </div>
 
 </div>
 
 
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    © 2026 StreamX. All rights reserved.
+
+</footer>
+
+
 <script>
 
-/* =========================================
-   DATABASE
-========================================= */
+    /* =====================================================
+       SAMPLE VIDEO DATABASE
 
-let db;
+       Later this section will be replaced with videos
+       retrieved from Supabase.
+    ===================================================== */
 
-const request = indexedDB.open("VybeVideoDB", 1);
+    const videos = [
 
-request.onupgradeneeded = function(event) {
+        {
+            id: 1,
 
-    db = event.target.result;
+            title: "Amazing Nature",
+            category: "Lifestyle",
 
-    if (!db.objectStoreNames.contains("videos")) {
+            description:
+                "Beautiful views and relaxing moments from nature.",
 
-        db.createObjectStore("videos", {
-            keyPath: "id"
-        });
+            thumbnail:
+                "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80",
 
-    }
-};
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-request.onsuccess = function(event) {
+            views: "12K",
+            duration: "0:15"
+        },
 
-    db = event.target.result;
+        {
+            id: 2,
 
-    loadVideos();
+            title: "City Life",
+            category: "Entertainment",
 
-};
+            description:
+                "Experience the energy and movement of city life.",
 
-request.onerror = function() {
+            thumbnail:
+                "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80",
 
-    console.error("Database error");
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-};
+            views: "8.4K",
+            duration: "0:15"
+        },
 
+        {
+            id: 3,
 
-/* =========================================
-   DEFAULT VIDEOS
-========================================= */
+            title: "Beautiful Sunset",
+            category: "Trending",
 
-const demoVideos = [
+            description:
+                "A beautiful sunset captured in high quality.",
 
-    {
-        id: "demo1",
-        title: "Welcome to VYBE",
-        description: "Discover amazing short videos.",
-        category: "Entertainment",
-        creator: "@vybe",
-        color: "linear-gradient(135deg,#8b5cf6,#ec4899)"
-    },
+            thumbnail:
+                "https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&w=900&q=80",
 
-    {
-        id: "demo2",
-        title: "Sports Highlights",
-        description: "The best sporting moments.",
-        category: "Sports",
-        creator: "@sports",
-        color: "linear-gradient(135deg,#2563eb,#06b6d4)"
-    },
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-    {
-        id: "demo3",
-        title: "Gaming Moments",
-        description: "Epic gaming clips and highlights.",
-        category: "Gaming",
-        creator: "@gamer",
-        color: "linear-gradient(135deg,#16a34a,#22c55e)"
-    },
+            views: "25K",
+            duration: "0:15"
+        },
 
-    {
-        id: "demo4",
-        title: "Learn Something New",
-        description: "Quick educational content.",
-        category: "Education",
-        creator: "@learn",
-        color: "linear-gradient(135deg,#f59e0b,#ef4444)"
-    }
+        {
+            id: 4,
 
-];
+            title: "Gaming Highlights",
+            category: "Gaming",
 
+            description:
+                "The best gaming moments and highlights.",
 
-/* =========================================
-   STATE
-========================================= */
+            thumbnail:
+                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80",
 
-let videos = [];
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-let selectedCategory = "All";
+            views: "19K",
+            duration: "0:15"
+        },
 
-let searchTerm = "";
+        {
+            id: 5,
 
+            title: "Football Skills",
+            category: "Sports",
 
-/* =========================================
-   LOAD VIDEOS
-========================================= */
+            description:
+                "Amazing football skills and moments.",
 
-function loadVideos() {
+            thumbnail:
+                "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=80",
 
-    const transaction = db.transaction(
-        ["videos"],
-        "readonly"
-    );
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-    const store = transaction.objectStore("videos");
+            views: "31K",
+            duration: "0:15"
+        },
 
-    const getRequest = store.getAll();
+        {
+            id: 6,
 
-    getRequest.onsuccess = function() {
+            title: "Music Session",
+            category: "Music",
 
-        const uploaded = getRequest.result || [];
+            description:
+                "A relaxing music performance.",
 
-        videos = [...demoVideos, ...uploaded];
+            thumbnail:
+                "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=900&q=80",
 
-        renderVideos();
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-    };
+            views: "14K",
+            duration: "0:15"
+        },
 
-}
+        {
+            id: 7,
 
+            title: "Learn Something New",
+            category: "Education",
 
-/* =========================================
-   RENDER VIDEOS
-========================================= */
+            description:
+                "Short educational content designed to teach something useful.",
 
-function renderVideos() {
+            thumbnail:
+                "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80",
 
-    const grid = document.getElementById("videoGrid");
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-    grid.innerHTML = "";
+            views: "6.2K",
+            duration: "0:15"
+        },
 
-    let filtered = videos.filter(video => {
+        {
+            id: 8,
 
-        const categoryMatch =
-            selectedCategory === "All" ||
-            video.category === selectedCategory;
+            title: "Trending Moments",
+            category: "Trending",
 
-        const searchMatch =
-            video.title.toLowerCase().includes(searchTerm) ||
-            video.description.toLowerCase().includes(searchTerm);
+            description:
+                "Some of the most interesting moments trending right now.",
 
-        return categoryMatch && searchMatch;
+            thumbnail:
+                "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=900&q=80",
 
-    });
+            video:
+                "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
 
-
-    if (filtered.length === 0) {
-
-        grid.innerHTML = `
-            <div class="empty">
-                <h2>No videos found</h2>
-                <p>Try another category or search.</p>
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    filtered.forEach(video => {
-
-        const card = document.createElement("div");
-
-        card.className = "video-card";
-
-        /* Uploaded videos */
-
-        if (video.blob) {
-
-            const videoURL =
-                URL.createObjectURL(video.blob);
-
-            card.innerHTML = `
-
-                <video
-                    src="${videoURL}"
-                    loop
-                    muted
-                    playsinline
-                    preload="metadata"
-                ></video>
-
-                <div class="video-info">
-
-                    <div class="creator">
-                        ${escapeHTML(video.creator || "@you")}
-                    </div>
-
-                    <div class="description">
-                        <strong>${escapeHTML(video.title)}</strong>
-                        <br>
-                        ${escapeHTML(video.description || "")}
-                    </div>
-
-                    <div class="video-actions">
-
-                        <button
-                            class="action-btn"
-                            onclick="likeVideo('${video.id}', this)"
-                        >
-                            ❤️ ${video.likes || 0}
-                        </button>
-
-                        <button
-                            class="action-btn"
-                            onclick="shareVideo('${video.id}')"
-                        >
-                            ↗ Share
-                        </button>
-
-                        <button
-                            class="action-btn delete-btn"
-                            onclick="deleteVideo('${video.id}')"
-                        >
-                            🗑
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
+            views: "42K",
+            duration: "0:15"
         }
 
-        /* Demo videos */
+    ];
 
-        else {
 
-            card.innerHTML = `
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
 
-                <div
-                    style="
-                    width:100%;
-                    height:100%;
-                    background:${video.color};
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:70px;
-                    "
-                >
-                    ▶
-                </div>
+    const videoGrid =
+        document.getElementById("videoGrid");
 
-                <div class="video-info">
+    const searchInput =
+        document.getElementById("searchInput");
 
-                    <div class="creator">
-                        ${video.creator}
-                    </div>
+    const emptyState =
+        document.getElementById("emptyState");
 
-                    <div class="description">
+    const videoModal =
+        document.getElementById("videoModal");
 
-                        <strong>
-                            ${video.title}
-                        </strong>
+    const videoPlayer =
+        document.getElementById("videoPlayer");
 
-                        <br>
+    const playerTitle =
+        document.getElementById("playerTitle");
 
-                        ${video.description}
+    const modalTitle =
+        document.getElementById("modalTitle");
 
-                    </div>
+    const modalDescription =
+        document.getElementById("modalDescription");
 
-                    <div class="video-actions">
+    let currentVideo = null;
 
-                        <button
-                            class="action-btn"
-                            onclick="alert('Demo video')"
-                        >
-                            ❤️ Like
-                        </button>
+    let currentCategory = "All";
 
-                        <button
-                            class="action-btn"
-                            onclick="shareVideo('${video.id}')"
-                        >
-                            ↗ Share
-                        </button>
 
-                    </div>
+    /* =====================================================
+       DISPLAY VIDEOS
+    ===================================================== */
 
-                </div>
+    function displayVideos(list) {
 
-            `;
+        videoGrid.innerHTML = "";
 
-        }
+        if (list.length === 0) {
 
-
-        grid.appendChild(card);
-
-    });
-
-
-    setupVideoObserver();
-
-}
-
-
-/* =========================================
-   VIDEO AUTO PLAY
-========================================= */
-
-function setupVideoObserver() {
-
-    const observer =
-        new IntersectionObserver(
-
-            entries => {
-
-                entries.forEach(entry => {
-
-                    const video =
-                        entry.target.querySelector("video");
-
-                    if (!video) return;
-
-                    if (entry.isIntersecting) {
-
-                        video.play().catch(() => {});
-
-                    } else {
-
-                        video.pause();
-
-                    }
-
-                });
-
-            },
-
-            {
-                threshold: 0.65
-            }
-
-        );
-
-
-    document
-        .querySelectorAll(".video-card")
-        .forEach(card => {
-
-            observer.observe(card);
-
-        });
-
-}
-
-
-/* =========================================
-   UPLOAD
-========================================= */
-
-function openUpload() {
-
-    document
-        .getElementById("uploadModal")
-        .classList.add("show");
-
-}
-
-function closeUpload() {
-
-    document
-        .getElementById("uploadModal")
-        .classList.remove("show");
-
-}
-
-
-/* =========================================
-   FILE NAME
-========================================= */
-
-document
-    .getElementById("videoFile")
-    .addEventListener("change", function() {
-
-        const file = this.files[0];
-
-        document
-            .getElementById("fileName")
-            .textContent =
-            file ? file.name : "Select a video from your device";
-
-    });
-
-
-/* =========================================
-   SAVE UPLOAD
-========================================= */
-
-document
-    .getElementById("uploadForm")
-    .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        const file =
-            document.getElementById("videoFile").files[0];
-
-        if (!file) {
-
-            alert("Please select a video.");
+            emptyState.style.display = "block";
 
             return;
 
         }
 
+        emptyState.style.display = "none";
 
-        const newVideo = {
 
-            id:
-                Date.now().toString(),
+        list.forEach(video => {
 
-            title:
-                document.getElementById("videoTitle").value,
+            const card =
+                document.createElement("div");
 
-            description:
-                document.getElementById("videoDescription").value,
+            card.className = "video-card";
 
-            category:
-                document.getElementById("videoCategory").value,
 
-            creator:
-                "@you",
+            card.innerHTML = `
 
-            blob:
-                file,
+                <div class="thumbnail">
 
-            likes:
-                0,
+                    <img
+                        src="${video.thumbnail}"
+                        alt="${video.title}"
+                        loading="lazy"
+                    >
 
-            createdAt:
-                new Date().toISOString()
+                    <div class="play-overlay"></div>
+
+                    <div class="duration">
+                        ${video.duration}
+                    </div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <div class="video-title">
+                        ${video.title}
+                    </div>
+
+                    <div class="video-meta">
+                        ${video.category} • ${video.views} views
+                    </div>
+
+                </div>
+
+            `;
+
+
+            card.addEventListener(
+                "click",
+                () => openPlayer(video)
+            );
+
+
+            videoGrid.appendChild(card);
+
+        });
+
+    }
+
+
+    /* =====================================================
+       OPEN VIDEO
+    ===================================================== */
+
+    function openPlayer(video) {
+
+        currentVideo = video;
+
+        playerTitle.textContent =
+            video.title;
+
+        modalTitle.textContent =
+            video.title;
+
+        modalDescription.textContent =
+            video.description;
+
+        videoPlayer.src =
+            video.video;
+
+        videoModal.classList.add("active");
+
+        document.body.style.overflow =
+            "hidden";
+
+        videoPlayer.play().catch(() => {});
+
+    }
+
+
+    /* =====================================================
+       CLOSE VIDEO
+    ===================================================== */
+
+    function closePlayer() {
+
+        videoPlayer.pause();
+
+        videoPlayer.src = "";
+
+        videoModal.classList.remove("active");
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+
+    /* =====================================================
+       LIKE
+    ===================================================== */
+
+    function likeVideo() {
+
+        const button =
+            document.getElementById("likeButton");
+
+        button.classList.toggle("liked");
+
+        if (button.classList.contains("liked")) {
+
+            button.innerHTML =
+                "♥ Liked";
+
+        } else {
+
+            button.innerHTML =
+                "♡ Like";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SHARE
+    ===================================================== */
+
+    function shareVideo() {
+
+        if (!currentVideo) return;
+
+        const shareData = {
+
+            title: currentVideo.title,
+
+            text: currentVideo.description,
+
+            url: window.location.href
 
         };
 
 
-        const transaction =
-            db.transaction(
-                ["videos"],
-                "readwrite"
+        if (navigator.share) {
+
+            navigator.share(shareData);
+
+        } else {
+
+            navigator.clipboard.writeText(
+                window.location.href
             );
 
-        const store =
-            transaction.objectStore("videos");
+            alert("Video link copied!");
 
-        store.add(newVideo);
+        }
 
-
-        transaction.oncomplete = function() {
-
-            videos.push(newVideo);
-
-            renderVideos();
-
-            document
-                .getElementById("uploadForm")
-                .reset();
-
-            document
-                .getElementById("fileName")
-                .textContent =
-                "Select a video from your device";
-
-            closeUpload();
-
-        };
-
-    });
+    }
 
 
-/* =========================================
-   DELETE VIDEO
-========================================= */
+    /* =====================================================
+       CATEGORY FILTER
+    ===================================================== */
 
-function deleteVideo(id) {
+    document
+        .querySelectorAll(".category")
+        .forEach(button => {
 
-    if (!confirm("Delete this video?")) return;
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(".category")
+                        .forEach(btn =>
+                            btn.classList.remove("active")
+                        );
 
 
-    const transaction =
-        db.transaction(
-            ["videos"],
-            "readwrite"
-        );
-
-    transaction
-        .objectStore("videos")
-        .delete(id);
+                    button.classList.add("active");
 
 
-    transaction.oncomplete = function() {
+                    currentCategory =
+                        button.dataset.category;
 
-        videos =
-            videos.filter(video =>
-                video.id !== id
+
+                    filterVideos();
+
+                }
             );
 
-        renderVideos();
-
-    };
-
-}
+        });
 
 
-/* =========================================
-   LIKE VIDEO
-========================================= */
+    /* =====================================================
+       SEARCH
+    ===================================================== */
 
-function likeVideo(id, button) {
-
-    const video =
-        videos.find(v => v.id === id);
-
-    if (!video) return;
-
-    video.likes =
-        (video.likes || 0) + 1;
+    searchInput.addEventListener(
+        "input",
+        filterVideos
+    );
 
 
-    button.innerHTML =
-        `❤️ ${video.likes}`;
+    function filterVideos() {
+
+        const search =
+            searchInput.value
+                .toLowerCase()
+                .trim();
 
 
-    const transaction =
-        db.transaction(
-            ["videos"],
-            "readwrite"
-        );
+        let filtered =
+            videos.filter(video => {
 
-    transaction
-        .objectStore("videos")
-        .put(video);
-
-}
+                const matchesCategory =
+                    currentCategory === "All" ||
+                    video.category === currentCategory;
 
 
-/* =========================================
-   SHARE
-========================================= */
+                const matchesSearch =
+                    video.title
+                        .toLowerCase()
+                        .includes(search) ||
 
-function shareVideo(id) {
+                    video.description
+                        .toLowerCase()
+                        .includes(search) ||
 
-    const video =
-        videos.find(v => v.id === id);
-
-    if (!video) return;
-
-
-    const shareData = {
-
-        title: video.title,
-
-        text: video.description,
-
-        url: window.location.href
-
-    };
+                    video.category
+                        .toLowerCase()
+                        .includes(search);
 
 
-    if (navigator.share) {
+                return matchesCategory &&
+                       matchesSearch;
 
-        navigator.share(shareData);
+            });
 
-    } else {
 
-        navigator.clipboard
-            .writeText(window.location.href)
-            .then(() => {
+        displayVideos(filtered);
 
-                alert("Link copied!");
+    }
 
+
+    /* =====================================================
+       VIEW ALL
+    ===================================================== */
+
+    function showAllVideos() {
+
+        currentCategory = "All";
+
+        searchInput.value = "";
+
+        document
+            .querySelectorAll(".category")
+            .forEach(btn =>
+                btn.classList.remove("active")
+            );
+
+        document
+            .querySelector('[data-category="All"]')
+            .classList.add("active");
+
+        displayVideos(videos);
+
+    }
+
+
+    /* =====================================================
+       FEATURED VIDEO
+    ===================================================== */
+
+    function openFeaturedVideo() {
+
+        openPlayer(videos[2]);
+
+    }
+
+
+    /* =====================================================
+       CATEGORY SCROLL
+    ===================================================== */
+
+    function scrollToCategories() {
+
+        document
+            .querySelector(".categories")
+            .scrollIntoView({
+                behavior: "smooth"
             });
 
     }
 
-}
 
+    /* =====================================================
+       CLOSE MODAL WHEN CLICKING OUTSIDE PLAYER
+    ===================================================== */
 
-/* =========================================
-   CATEGORY FILTER
-========================================= */
+    videoModal.addEventListener(
+        "click",
+        function(event) {
 
-document
-    .getElementById("categories")
-    .addEventListener("click", function(event) {
+            if (event.target === videoModal) {
 
-        const category =
-            event.target.closest(".category");
+                closePlayer();
 
-        if (!category) return;
-
-
-        document
-            .querySelectorAll(".category")
-            .forEach(button =>
-                button.classList.remove("active")
-            );
-
-
-        category.classList.add("active");
-
-
-        selectedCategory =
-            category.dataset.category;
-
-
-        renderVideos();
-
-    });
-
-
-/* =========================================
-   SEARCH
-========================================= */
-
-document
-    .getElementById("searchInput")
-    .addEventListener("input", function() {
-
-        searchTerm =
-            this.value.toLowerCase().trim();
-
-        renderVideos();
-
-    });
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHTML(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        text || "";
-
-    return div.innerHTML;
-
-}
-
-
-/* =========================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-========================================= */
-
-document
-    .getElementById("uploadModal")
-    .addEventListener("click", function(event) {
-
-        if (event.target === this) {
-
-            closeUpload();
+            }
 
         }
+    );
 
-    });
+
+    /* =====================================================
+       ESC KEY
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closePlayer();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       INITIAL LOAD
+    ===================================================== */
+
+    displayVideos(videos);
 
 </script>
 
