@@ -1,653 +1,1235 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0f0c29" />
-  <title>Elegant Todo</title>
-  <style>
-    :root {
-      --bg-start: #0f0c29;
-      --bg-mid: #302b63;
-      --bg-end: #24243e;
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --text: #f5f5f7;
-      --text-muted: rgba(255, 255, 255, 0.55);
-      --accent: #a78bfa;
-      --accent-2: #f472b6;
-      --success: #34d399;
-      --danger: #f87171;
-      --radius: 16px;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+<title>VYBE — Short Videos</title>
 
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
-      background-attachment: fixed;
-      color: var(--text);
-      overflow-x: hidden;
-    }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100dvh;
-      padding-top: var(--safe-top);
-      padding-bottom: var(--safe-bottom);
-    }
+:root {
+    --bg: #07070b;
+    --card: #111118;
+    --text: #ffffff;
+    --muted: #9b9ba8;
+    --accent: #8b5cf6;
+    --accent2: #ec4899;
+    --border: rgba(255,255,255,0.08);
+}
 
-    .app {
-      width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      padding: 1.25rem 1rem 1.5rem;
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(139,92,246,.15), transparent 35%),
+        radial-gradient(circle at top right, rgba(236,72,153,.10), transparent 30%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* HEADER */
+
+header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(7,7,11,.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search {
+    width: 250px;
+    padding: 11px 16px;
+    border-radius: 25px;
+    border: 1px solid var(--border);
+    outline: none;
+    background: rgba(255,255,255,.06);
+    color: white;
+}
+
+.search::placeholder {
+    color: #888894;
+}
+
+.upload-btn {
+    border: none;
+    cursor: pointer;
+    padding: 11px 18px;
+    border-radius: 25px;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    transition: .2s;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* CATEGORIES */
+
+.categories {
+    display: flex;
+    gap: 10px;
+    padding: 18px 25px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category {
+    flex: 0 0 auto;
+    padding: 9px 17px;
+    border-radius: 25px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--border);
+    color: #bbb;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.category:hover,
+.category.active {
+    color: white;
+    border-color: transparent;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+}
+
+/* MAIN */
+
+main {
+    max-width: 1400px;
+    margin: auto;
+    padding: 10px 25px 50px;
+}
+
+.section-title {
+    font-size: 25px;
+    margin: 10px 0 20px;
+}
+
+/* VIDEO GRID */
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.video-card {
+    position: relative;
+    height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #111;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+
+.video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #111;
+}
+
+.video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 45%,
+        rgba(0,0,0,.85)
+    );
+    pointer-events: none;
+}
+
+.video-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 18px;
+    z-index: 2;
+}
+
+.creator {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.description {
+    color: #ddd;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.video-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    border: none;
+    color: white;
+    background: rgba(255,255,255,.12);
+    padding: 8px 11px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+    background: rgba(255,255,255,.25);
+}
+
+.delete-btn {
+    color: #ff7777;
+}
+
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+}
+
+/* UPLOAD MODAL */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 520px;
+    padding: 28px;
+    border-radius: 25px;
+    background: #12121a;
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #bbb;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #09090e;
+    color: white;
+    outline: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cancel {
+    background: #292933;
+    color: white;
+}
+
+.submit {
+    background: linear-gradient(90deg,#8b5cf6,#ec4899);
+    color: white;
+}
+
+.file-name {
+    color: #aaa;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+/* MOBILE */
+
+@media (max-width: 1100px) {
+    .video-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
+}
+
+@media (max-width: 800px) {
 
     header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      padding-top: 0.5rem;
+        padding: 0 15px;
     }
 
-    header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(90deg, #c4b5fd, #f9a8d4, #67e8f9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .search {
+        width: 150px;
     }
 
-    header p {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      margin-top: 0.35rem;
+    .video-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 1.25rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .video-card {
+        height: 470px;
     }
 
-    .stats span {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
+    main {
+        padding: 5px 12px 40px;
     }
 
-    .stats .count {
-      font-weight: 600;
-      color: var(--accent);
+    .categories {
+        padding: 15px 12px;
+    }
+}
+
+@media (max-width: 550px) {
+
+    header {
+        height: 60px;
     }
 
-    .add-form {
-      display: flex;
-      gap: 0.6rem;
-      margin-bottom: 1.25rem;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 0.5rem;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
+    .logo {
+        font-size: 22px;
     }
 
-    .add-form input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 1rem;
-      padding: 0.65rem 0.75rem;
-      min-width: 0;
+    .header-right {
+        gap: 6px;
     }
 
-    .add-form input::placeholder {
-      color: var(--text-muted);
+    .search {
+        width: 115px;
+        padding: 9px 12px;
     }
 
-    .add-form button {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      border: none;
-      color: white;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.65rem 1.1rem;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      white-space: nowrap;
-      flex-shrink: 0;
+    .upload-btn {
+        padding: 9px 12px;
     }
 
-    .add-form button:active {
-      transform: scale(0.96);
-      opacity: 0.9;
+    .video-grid {
+        display: block;
     }
 
-    .todo-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 0.5rem;
+    .video-card {
+        width: 100%;
+        height: calc(100vh - 150px);
+        max-height: 700px;
+        margin-bottom: 18px;
+        border-radius: 18px;
     }
 
-    .todo-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 0.85rem 0.9rem;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
-      animation: slideIn 0.3s ease;
+    .section-title {
+        font-size: 21px;
     }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .todo-item.removing {
-      opacity: 0;
-      transform: translateX(-20px) scale(0.95);
-    }
-
-    .todo-item.completed .todo-text {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
-    .checkbox {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.35);
-      flex-shrink: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      background: transparent;
-    }
-
-    .todo-item.completed .checkbox {
-      background: linear-gradient(135deg, var(--success), #10b981);
-      border-color: transparent;
-    }
-
-    .checkbox svg {
-      width: 12px;
-      height: 12px;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .todo-item.completed .checkbox svg {
-      opacity: 1;
-    }
-
-    .todo-text {
-      flex: 1;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      word-break: break-word;
-      min-width: 0;
-      cursor: default;
-    }
-
-    .todo-item.editing .todo-text {
-      display: none;
-    }
-
-    .edit-input {
-      display: none;
-      flex: 1;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 0.95rem;
-      padding: 0.45rem 0.65rem;
-      outline: none;
-      min-width: 0;
-    }
-
-    .todo-item.editing .edit-input {
-      display: block;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.35rem;
-      flex-shrink: 0;
-    }
-
-    .btn-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      border: none;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
-    }
-
-    .btn-icon:active {
-      transform: scale(0.92);
-    }
-
-    .btn-icon.edit:hover,
-    .btn-icon.edit:focus {
-      background: rgba(167, 139, 250, 0.25);
-      color: var(--accent);
-    }
-
-    .btn-icon.delete:hover,
-    .btn-icon.delete:focus {
-      background: rgba(248, 113, 113, 0.25);
-      color: var(--danger);
-    }
-
-    .btn-icon.save {
-      background: rgba(52, 211, 153, 0.2);
-      color: var(--success);
-    }
-
-    .btn-icon.cancel {
-      background: rgba(248, 113, 113, 0.15);
-      color: var(--danger);
-    }
-
-    .todo-item.editing .btn-icon.edit,
-    .todo-item.editing .btn-icon.delete {
-      display: none;
-    }
-
-    .todo-item:not(.editing) .btn-icon.save,
-    .todo-item:not(.editing) .btn-icon.cancel {
-      display: none;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-muted);
-    }
-
-    .empty svg {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 1rem;
-      opacity: 0.4;
-    }
-
-    .empty p {
-      font-size: 1rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .empty small {
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem 0 0.25rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      opacity: 0.7;
-    }
-
-    @media (min-width: 520px) {
-      .app {
-        padding: 2rem 1.5rem 2rem;
-      }
-
-      header h1 {
-        font-size: 2rem;
-      }
-
-      .todo-item {
-        padding: 1rem 1.1rem;
-      }
-
-      .btn-icon {
-        width: 38px;
-        height: 38px;
-      }
-    }
-
-    @media (max-width: 360px) {
-      .app {
-        padding: 1rem 0.75rem 1.25rem;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      .add-form button {
-        padding: 0.6rem 0.85rem;
-        font-size: 0.85rem;
-      }
-
-      .todo-text {
-        font-size: 0.9rem;
-      }
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      header {
-        margin-bottom: 0.75rem;
-      }
-
-      header p,
-      .stats {
-        display: none;
-      }
-
-      .add-form {
-        margin-bottom: 0.75rem;
-      }
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <header>
-      <h1>Elegant Todo</h1>
-      <p>Capture thoughts. Stay focused.</p>
-    </header>
 
-    <div class="stats" id="stats">
-      <span><span class="count" id="totalCount">0</span> total</span>
-      <span><span class="count" id="activeCount">0</span> active</span>
-      <span><span class="count" id="doneCount">0</span> done</span>
+<header>
+
+    <div class="logo">VYBE</div>
+
+    <div class="header-right">
+
+        <input
+            type="text"
+            id="searchInput"
+            class="search"
+            placeholder="Search videos..."
+        >
+
+        <button class="upload-btn" onclick="openUpload()">
+            + Upload
+        </button>
+
     </div>
 
-    <form class="add-form" id="addForm">
-      <input
-        type="text"
-        id="todoInput"
-        placeholder="What needs to be done?"
-        autocomplete="off"
-        maxlength="200"
-        aria-label="New todo"
-      />
-      <button type="submit">Add</button>
-    </form>
+</header>
 
-    <ul class="todo-list" id="todoList" role="list"></ul>
+<div class="categories" id="categories">
 
-    <div class="empty" id="emptyState" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9 12h6M9 16h4" stroke-linecap="round"/>
-      </svg>
-      <p>No tasks yet</p>
-      <small>Add one above to get started</small>
+    <div class="category active" data-category="All">
+        All
     </div>
 
-    <footer>Data stays on this device · localStorage</footer>
-  </div>
+    <div class="category" data-category="Entertainment">
+        Entertainment
+    </div>
 
-  <script>
-    const STORAGE_KEY = "elegant-todo-v1";
+    <div class="category" data-category="Sports">
+        Sports
+    </div>
 
-    /** @type {{ id: string, text: string, completed: boolean, createdAt: number }[]} */
-    let todos = [];
+    <div class="category" data-category="Gaming">
+        Gaming
+    </div>
 
-    const addForm = document.getElementById("addForm");
-    const todoInput = document.getElementById("todoInput");
-    const todoList = document.getElementById("todoList");
-    const emptyState = document.getElementById("emptyState");
-    const totalCount = document.getElementById("totalCount");
-    const activeCount = document.getElementById("activeCount");
-    const doneCount = document.getElementById("doneCount");
+    <div class="category" data-category="Music">
+        Music
+    </div>
 
-    function loadTodos() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) todos = parsed;
-        }
-      } catch (e) {
-        console.warn("Could not load todos", e);
-        todos = [];
-      }
-    }
+    <div class="category" data-category="Education">
+        Education
+    </div>
 
-    function saveTodos() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-      } catch (e) {
-        console.warn("Could not save todos", e);
-      }
-    }
+    <div class="category" data-category="Technology">
+        Technology
+    </div>
 
-    function uid() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    }
+    <div class="category" data-category="Lifestyle">
+        Lifestyle
+    </div>
 
-    function updateStats() {
-      const total = todos.length;
-      const done = todos.filter((t) => t.completed).length;
-      totalCount.textContent = total;
-      activeCount.textContent = total - done;
-      doneCount.textContent = done;
-    }
+    <div class="category" data-category="Business">
+        Business
+    </div>
 
-    function showEmpty() {
-      const isEmpty = todos.length === 0;
-      emptyState.hidden = !isEmpty;
-      todoList.hidden = isEmpty;
-    }
+</div>
 
-    function render() {
-      todoList.innerHTML = "";
-      todos
-        .slice()
-        .sort((a, b) => b.createdAt - a.createdAt)
-        .forEach((todo) => {
-          const li = document.createElement("li");
-          li.className = "todo-item" + (todo.completed ? " completed" : "");
-          li.dataset.id = todo.id;
-          li.setAttribute("role", "listitem");
+<main>
 
-          li.innerHTML = `
-            <button class="checkbox" type="button" aria-label="${todo.completed ? "Mark incomplete" : "Mark complete"}">
-              <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.2">
-                <path d="M2 6l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <span class="todo-text">${escapeHtml(todo.text)}</span>
-            <input class="edit-input" type="text" value="${escapeAttr(todo.text)}" maxlength="200" />
-            <div class="actions">
-              <button class="btn-icon edit" type="button" aria-label="Edit">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-              <button class="btn-icon delete" type="button" aria-label="Delete">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                  <line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
-                </svg>
-              </button>
-              <button class="btn-icon save" type="button" aria-label="Save">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="btn-icon cancel" type="button" aria-label="Cancel">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
-                </svg>
-              </button>
+    <h1 class="section-title">Discover</h1>
+
+    <div class="video-grid" id="videoGrid"></div>
+
+</main>
+
+
+<!-- UPLOAD MODAL -->
+
+<div class="modal" id="uploadModal">
+
+    <div class="modal-box">
+
+        <h2>Upload a Video</h2>
+
+        <form id="uploadForm">
+
+            <div class="form-group">
+
+                <label>Video</label>
+
+                <input
+                    type="file"
+                    id="videoFile"
+                    accept="video/*"
+                    required
+                >
+
+                <div class="file-name" id="fileName">
+                    Select a video from your device
+                </div>
+
             </div>
-          `;
 
-          const checkbox = li.querySelector(".checkbox");
-          const editBtn = li.querySelector(".edit");
-          const deleteBtn = li.querySelector(".delete");
-          const saveBtn = li.querySelector(".save");
-          const cancelBtn = li.querySelector(".cancel");
-          const editInput = li.querySelector(".edit-input");
+            <div class="form-group">
 
-          checkbox.addEventListener("click", () => toggleComplete(todo.id));
-          editBtn.addEventListener("click", () => startEdit(li, editInput));
-          deleteBtn.addEventListener("click", () => removeTodo(todo.id, li));
-          saveBtn.addEventListener("click", () => finishEdit(todo.id, li, editInput));
-          cancelBtn.addEventListener("click", () => cancelEdit(li, editInput, todo.text));
+                <label>Title</label>
 
-          editInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              finishEdit(todo.id, li, editInput);
-            } else if (e.key === "Escape") {
-              cancelEdit(li, editInput, todo.text);
-            }
-          });
+                <input
+                    type="text"
+                    id="videoTitle"
+                    placeholder="Enter video title"
+                    required
+                >
 
-          todoList.appendChild(li);
+            </div>
+
+            <div class="form-group">
+
+                <label>Description</label>
+
+                <textarea
+                    id="videoDescription"
+                    placeholder="Tell people about your video..."
+                ></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Category</label>
+
+                <select id="videoCategory">
+
+                    <option>Entertainment</option>
+                    <option>Sports</option>
+                    <option>Gaming</option>
+                    <option>Music</option>
+                    <option>Education</option>
+                    <option>Technology</option>
+                    <option>Lifestyle</option>
+                    <option>Business</option>
+
+                </select>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    onclick="closeUpload()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="submit"
+                >
+                    Upload Video
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   DATABASE
+========================================= */
+
+let db;
+
+const request = indexedDB.open("VybeVideoDB", 1);
+
+request.onupgradeneeded = function(event) {
+
+    db = event.target.result;
+
+    if (!db.objectStoreNames.contains("videos")) {
+
+        db.createObjectStore("videos", {
+            keyPath: "id"
         });
 
-      updateStats();
-      showEmpty();
+    }
+};
+
+request.onsuccess = function(event) {
+
+    db = event.target.result;
+
+    loadVideos();
+
+};
+
+request.onerror = function() {
+
+    console.error("Database error");
+
+};
+
+
+/* =========================================
+   DEFAULT VIDEOS
+========================================= */
+
+const demoVideos = [
+
+    {
+        id: "demo1",
+        title: "Welcome to VYBE",
+        description: "Discover amazing short videos.",
+        category: "Entertainment",
+        creator: "@vybe",
+        color: "linear-gradient(135deg,#8b5cf6,#ec4899)"
+    },
+
+    {
+        id: "demo2",
+        title: "Sports Highlights",
+        description: "The best sporting moments.",
+        category: "Sports",
+        creator: "@sports",
+        color: "linear-gradient(135deg,#2563eb,#06b6d4)"
+    },
+
+    {
+        id: "demo3",
+        title: "Gaming Moments",
+        description: "Epic gaming clips and highlights.",
+        category: "Gaming",
+        creator: "@gamer",
+        color: "linear-gradient(135deg,#16a34a,#22c55e)"
+    },
+
+    {
+        id: "demo4",
+        title: "Learn Something New",
+        description: "Quick educational content.",
+        category: "Education",
+        creator: "@learn",
+        color: "linear-gradient(135deg,#f59e0b,#ef4444)"
     }
 
-    function escapeHtml(str) {
-      const div = document.createElement("div");
-      div.textContent = str;
-      return div.innerHTML;
-    }
+];
 
-    function escapeAttr(str) {
-      return str
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
 
-    function addTodo(text) {
-      const trimmed = text.trim();
-      if (!trimmed) return;
-      todos.push({
-        id: uid(),
-        text: trimmed,
-        completed: false,
-        createdAt: Date.now(),
-      });
-      saveTodos();
-      render();
-      todoInput.value = "";
-      todoInput.focus();
-    }
+/* =========================================
+   STATE
+========================================= */
 
-    function toggleComplete(id) {
-      const todo = todos.find((t) => t.id === id);
-      if (!todo) return;
-      todo.completed = !todo.completed;
-      saveTodos();
-      render();
-    }
+let videos = [];
 
-    function removeTodo(id, li) {
-      li.classList.add("removing");
-      setTimeout(() => {
-        todos = todos.filter((t) => t.id !== id);
-        saveTodos();
-        render();
-      }, 220);
-    }
+let selectedCategory = "All";
 
-    function startEdit(li, input) {
-      document.querySelectorAll(".todo-item.editing").forEach((el) => {
-        if (el !== li) {
-          el.classList.remove("editing");
-        }
-      });
-      li.classList.add("editing");
-      input.focus();
-      input.setSelectionRange(input.value.length, input.value.length);
-    }
+let searchTerm = "";
 
-    function finishEdit(id, li, input) {
-      const newText = input.value.trim();
-      if (!newText) {
-        removeTodo(id, li);
-        return;
-      }
-      const todo = todos.find((t) => t.id === id);
-      if (todo) {
-        todo.text = newText;
-        saveTodos();
-      }
-      li.classList.remove("editing");
-      render();
-    }
 
-    function cancelEdit(li, input, original) {
-      input.value = original;
-      li.classList.remove("editing");
-    }
+/* =========================================
+   LOAD VIDEOS
+========================================= */
 
-    addForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      addTodo(todoInput.value);
+function loadVideos() {
+
+    const transaction = db.transaction(
+        ["videos"],
+        "readonly"
+    );
+
+    const store = transaction.objectStore("videos");
+
+    const getRequest = store.getAll();
+
+    getRequest.onsuccess = function() {
+
+        const uploaded = getRequest.result || [];
+
+        videos = [...demoVideos, ...uploaded];
+
+        renderVideos();
+
+    };
+
+}
+
+
+/* =========================================
+   RENDER VIDEOS
+========================================= */
+
+function renderVideos() {
+
+    const grid = document.getElementById("videoGrid");
+
+    grid.innerHTML = "";
+
+    let filtered = videos.filter(video => {
+
+        const categoryMatch =
+            selectedCategory === "All" ||
+            video.category === selectedCategory;
+
+        const searchMatch =
+            video.title.toLowerCase().includes(searchTerm) ||
+            video.description.toLowerCase().includes(searchTerm);
+
+        return categoryMatch && searchMatch;
+
     });
 
-    loadTodos();
-    render();
-  </script>
+
+    if (filtered.length === 0) {
+
+        grid.innerHTML = `
+            <div class="empty">
+                <h2>No videos found</h2>
+                <p>Try another category or search.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    filtered.forEach(video => {
+
+        const card = document.createElement("div");
+
+        card.className = "video-card";
+
+        /* Uploaded videos */
+
+        if (video.blob) {
+
+            const videoURL =
+                URL.createObjectURL(video.blob);
+
+            card.innerHTML = `
+
+                <video
+                    src="${videoURL}"
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                ></video>
+
+                <div class="video-info">
+
+                    <div class="creator">
+                        ${escapeHTML(video.creator || "@you")}
+                    </div>
+
+                    <div class="description">
+                        <strong>${escapeHTML(video.title)}</strong>
+                        <br>
+                        ${escapeHTML(video.description || "")}
+                    </div>
+
+                    <div class="video-actions">
+
+                        <button
+                            class="action-btn"
+                            onclick="likeVideo('${video.id}', this)"
+                        >
+                            ❤️ ${video.likes || 0}
+                        </button>
+
+                        <button
+                            class="action-btn"
+                            onclick="shareVideo('${video.id}')"
+                        >
+                            ↗ Share
+                        </button>
+
+                        <button
+                            class="action-btn delete-btn"
+                            onclick="deleteVideo('${video.id}')"
+                        >
+                            🗑
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+        /* Demo videos */
+
+        else {
+
+            card.innerHTML = `
+
+                <div
+                    style="
+                    width:100%;
+                    height:100%;
+                    background:${video.color};
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:70px;
+                    "
+                >
+                    ▶
+                </div>
+
+                <div class="video-info">
+
+                    <div class="creator">
+                        ${video.creator}
+                    </div>
+
+                    <div class="description">
+
+                        <strong>
+                            ${video.title}
+                        </strong>
+
+                        <br>
+
+                        ${video.description}
+
+                    </div>
+
+                    <div class="video-actions">
+
+                        <button
+                            class="action-btn"
+                            onclick="alert('Demo video')"
+                        >
+                            ❤️ Like
+                        </button>
+
+                        <button
+                            class="action-btn"
+                            onclick="shareVideo('${video.id}')"
+                        >
+                            ↗ Share
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        grid.appendChild(card);
+
+    });
+
+
+    setupVideoObserver();
+
+}
+
+
+/* =========================================
+   VIDEO AUTO PLAY
+========================================= */
+
+function setupVideoObserver() {
+
+    const observer =
+        new IntersectionObserver(
+
+            entries => {
+
+                entries.forEach(entry => {
+
+                    const video =
+                        entry.target.querySelector("video");
+
+                    if (!video) return;
+
+                    if (entry.isIntersecting) {
+
+                        video.play().catch(() => {});
+
+                    } else {
+
+                        video.pause();
+
+                    }
+
+                });
+
+            },
+
+            {
+                threshold: 0.65
+            }
+
+        );
+
+
+    document
+        .querySelectorAll(".video-card")
+        .forEach(card => {
+
+            observer.observe(card);
+
+        });
+
+}
+
+
+/* =========================================
+   UPLOAD
+========================================= */
+
+function openUpload() {
+
+    document
+        .getElementById("uploadModal")
+        .classList.add("show");
+
+}
+
+function closeUpload() {
+
+    document
+        .getElementById("uploadModal")
+        .classList.remove("show");
+
+}
+
+
+/* =========================================
+   FILE NAME
+========================================= */
+
+document
+    .getElementById("videoFile")
+    .addEventListener("change", function() {
+
+        const file = this.files[0];
+
+        document
+            .getElementById("fileName")
+            .textContent =
+            file ? file.name : "Select a video from your device";
+
+    });
+
+
+/* =========================================
+   SAVE UPLOAD
+========================================= */
+
+document
+    .getElementById("uploadForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const file =
+            document.getElementById("videoFile").files[0];
+
+        if (!file) {
+
+            alert("Please select a video.");
+
+            return;
+
+        }
+
+
+        const newVideo = {
+
+            id:
+                Date.now().toString(),
+
+            title:
+                document.getElementById("videoTitle").value,
+
+            description:
+                document.getElementById("videoDescription").value,
+
+            category:
+                document.getElementById("videoCategory").value,
+
+            creator:
+                "@you",
+
+            blob:
+                file,
+
+            likes:
+                0,
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        const transaction =
+            db.transaction(
+                ["videos"],
+                "readwrite"
+            );
+
+        const store =
+            transaction.objectStore("videos");
+
+        store.add(newVideo);
+
+
+        transaction.oncomplete = function() {
+
+            videos.push(newVideo);
+
+            renderVideos();
+
+            document
+                .getElementById("uploadForm")
+                .reset();
+
+            document
+                .getElementById("fileName")
+                .textContent =
+                "Select a video from your device";
+
+            closeUpload();
+
+        };
+
+    });
+
+
+/* =========================================
+   DELETE VIDEO
+========================================= */
+
+function deleteVideo(id) {
+
+    if (!confirm("Delete this video?")) return;
+
+
+    const transaction =
+        db.transaction(
+            ["videos"],
+            "readwrite"
+        );
+
+    transaction
+        .objectStore("videos")
+        .delete(id);
+
+
+    transaction.oncomplete = function() {
+
+        videos =
+            videos.filter(video =>
+                video.id !== id
+            );
+
+        renderVideos();
+
+    };
+
+}
+
+
+/* =========================================
+   LIKE VIDEO
+========================================= */
+
+function likeVideo(id, button) {
+
+    const video =
+        videos.find(v => v.id === id);
+
+    if (!video) return;
+
+    video.likes =
+        (video.likes || 0) + 1;
+
+
+    button.innerHTML =
+        `❤️ ${video.likes}`;
+
+
+    const transaction =
+        db.transaction(
+            ["videos"],
+            "readwrite"
+        );
+
+    transaction
+        .objectStore("videos")
+        .put(video);
+
+}
+
+
+/* =========================================
+   SHARE
+========================================= */
+
+function shareVideo(id) {
+
+    const video =
+        videos.find(v => v.id === id);
+
+    if (!video) return;
+
+
+    const shareData = {
+
+        title: video.title,
+
+        text: video.description,
+
+        url: window.location.href
+
+    };
+
+
+    if (navigator.share) {
+
+        navigator.share(shareData);
+
+    } else {
+
+        navigator.clipboard
+            .writeText(window.location.href)
+            .then(() => {
+
+                alert("Link copied!");
+
+            });
+
+    }
+
+}
+
+
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+document
+    .getElementById("categories")
+    .addEventListener("click", function(event) {
+
+        const category =
+            event.target.closest(".category");
+
+        if (!category) return;
+
+
+        document
+            .querySelectorAll(".category")
+            .forEach(button =>
+                button.classList.remove("active")
+            );
+
+
+        category.classList.add("active");
+
+
+        selectedCategory =
+            category.dataset.category;
+
+
+        renderVideos();
+
+    });
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+document
+    .getElementById("searchInput")
+    .addEventListener("input", function() {
+
+        searchTerm =
+            this.value.toLowerCase().trim();
+
+        renderVideos();
+
+    });
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+========================================= */
+
+document
+    .getElementById("uploadModal")
+    .addEventListener("click", function(event) {
+
+        if (event.target === this) {
+
+            closeUpload();
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
+```
